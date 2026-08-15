@@ -31,6 +31,26 @@ model Content {
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
   topic        Topic     @relation(fields: [topicId], references: [id], onDelete: Cascade)
+  metrics      Metric[]
+}
+
+// 作品数据（一条文案 × 一个平台 × 一个日期 = 一条记录）
+model Metric {
+  id            Int      @id @default(autoincrement())
+  contentId     Int
+  platform      String // 抖音 | 小红书
+  date          DateTime
+  views         Int      @default(0)
+  completion3s  Float? // 3秒完播率 %
+  completionFull Float? // 总完播率 %
+  likes         Int      @default(0)
+  comments      Int      @default(0)
+  saves         Int      @default(0)
+  shares        Int      @default(0)
+  newFans       Int      @default(0)
+  iterationNote String   @default("") // 迭代日志：这条为什么好/差
+  createdAt     DateTime @default(now())
+  content       Content  @relation(fields: [contentId], references: [id], onDelete: Cascade)
 }
 
 // 键值配置（自定义禁词等）

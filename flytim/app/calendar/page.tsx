@@ -95,23 +95,23 @@ export default function CalendarPage() {
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-wrap items-center gap-3">
-        <h1 className="text-xl font-semibold">发布日历</h1>
-        <span className="text-sm text-zinc-500">
+        <h1 className="text-xl font-semibold text-zinc-900">发布日历</h1>
+        <span className="text-sm text-zinc-400">
           已发布 {stats.published} 条 · 计划/待发布 {stats.planned} 条
         </span>
         <div className="ml-auto flex items-center gap-2">
           <button
             onClick={() => move(-1)}
-            className="h-8 w-8 rounded-lg border border-zinc-800 text-zinc-400 hover:border-zinc-600 hover:text-zinc-200"
+            className="h-8 w-8 rounded-lg border border-zinc-300 text-zinc-500 hover:border-zinc-500 hover:text-zinc-900"
           >
             ‹
           </button>
-          <span className="min-w-[6.5rem] text-center text-sm">
+          <span className="min-w-[6.5rem] text-center text-sm text-zinc-900">
             {cursor.y} 年 {cursor.m + 1} 月
           </span>
           <button
             onClick={() => move(1)}
-            className="h-8 w-8 rounded-lg border border-zinc-800 text-zinc-400 hover:border-zinc-600 hover:text-zinc-200"
+            className="h-8 w-8 rounded-lg border border-zinc-300 text-zinc-500 hover:border-zinc-500 hover:text-zinc-900"
           >
             ›
           </button>
@@ -119,7 +119,7 @@ export default function CalendarPage() {
             onClick={() =>
               setCursor({ y: today.getFullYear(), m: today.getMonth() })
             }
-            className="rounded-lg border border-zinc-800 px-2.5 py-1.5 text-sm text-zinc-400 hover:border-zinc-600 hover:text-zinc-200"
+            className="rounded-lg border border-zinc-300 px-2.5 py-1.5 text-sm text-zinc-500 hover:border-zinc-500 hover:text-zinc-900"
           >
             今天
           </button>
@@ -128,20 +128,20 @@ export default function CalendarPage() {
 
       <div className="flex items-center gap-4 text-xs text-zinc-500">
         <span className="flex items-center gap-1.5">
-          <span className="h-1.5 w-1.5 rounded-full bg-amber-400" />
+          <span className="h-1.5 w-1.5 rounded-full bg-amber-500" />
           计划发布
         </span>
         <span className="flex items-center gap-1.5">
-          <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+          <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
           已发布
         </span>
       </div>
 
-      <div className="grid grid-cols-7 gap-px overflow-hidden rounded-xl border border-zinc-800 bg-zinc-800">
+      <div className="grid grid-cols-7 gap-px overflow-hidden rounded-xl border border-zinc-200 bg-zinc-200">
         {WEEKDAYS.map((w) => (
           <div
             key={w}
-            className="bg-zinc-900 py-2 text-center text-xs text-zinc-500"
+            className="bg-zinc-100 py-2 text-center text-xs text-zinc-500"
           >
             {w}
           </div>
@@ -154,14 +154,14 @@ export default function CalendarPage() {
           return (
             <div
               key={key}
-              className={`min-h-[86px] bg-zinc-950 p-1.5 sm:min-h-[110px] ${
+              className={`min-h-[86px] bg-white p-1.5 sm:min-h-[110px] ${
                 inMonth ? '' : 'opacity-40'
               }`}
             >
               <div
                 className={`mx-0.5 flex h-6 w-6 items-center justify-center rounded-full text-xs ${
                   isToday
-                    ? 'bg-amber-500/90 font-semibold text-zinc-950'
+                    ? 'bg-amber-500 font-semibold text-white'
                     : 'text-zinc-500'
                 }`}
               >
@@ -173,13 +173,13 @@ export default function CalendarPage() {
                     key={`${key}-${it.id}`}
                     href={`/contents/${it.id}`}
                     title={it.title}
-                    className="flex items-center gap-1.5 rounded-md bg-zinc-900/80 px-1.5 py-1 text-[11px] leading-4 text-zinc-300 hover:bg-zinc-800 hover:text-zinc-100"
+                    className="flex items-center gap-1.5 rounded-md bg-zinc-50 px-1.5 py-1 text-[11px] leading-4 text-zinc-700 hover:bg-zinc-100 hover:text-zinc-900"
                   >
                     <span
                       className={`h-1.5 w-1.5 shrink-0 rounded-full ${
                         it.kind === 'published'
-                          ? 'bg-emerald-400'
-                          : 'bg-amber-400'
+                          ? 'bg-emerald-500'
+                          : 'bg-amber-500'
                       }`}
                     />
                     <span className="truncate">{it.title}</span>

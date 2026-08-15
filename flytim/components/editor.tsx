@@ -16,6 +16,9 @@ import { Badge, CATEGORY_STYLE, TOPIC_STATUS_STYLE } from '@/components/badge'
 
 type FullContent = ContentDTO & { topic: TopicDTO }
 
+const INPUT_CLS =
+  'rounded-lg border border-zinc-300 bg-white px-2.5 py-1.5 text-sm text-zinc-900 outline-none focus:border-amber-500'
+
 export default function Editor({ id }: { id: number }) {
   const [data, setData] = useState<FullContent | null>(null)
   const [notFound, setNotFound] = useState(false)
@@ -186,10 +189,10 @@ export default function Editor({ id }: { id: number }) {
   if (notFound) {
     return (
       <div className="py-16 text-center">
-        <p className="text-zinc-400">文案不存在或已被删除</p>
+        <p className="text-zinc-500">文案不存在或已被删除</p>
         <Link
           href="/topics"
-          className="mt-3 inline-block text-sm text-amber-400 hover:underline"
+          className="mt-3 inline-block text-sm text-amber-600 hover:underline"
         >
           返回选题库
         </Link>
@@ -198,7 +201,7 @@ export default function Editor({ id }: { id: number }) {
   }
 
   if (!data) {
-    return <p className="py-16 text-center text-sm text-zinc-600">加载中…</p>
+    return <p className="py-16 text-center text-sm text-zinc-400">加载中…</p>
   }
 
   const saveLabel =
@@ -218,16 +221,16 @@ export default function Editor({ id }: { id: number }) {
       <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
         <Link
           href="/topics"
-          className="text-sm text-zinc-500 hover:text-zinc-200"
+          className="text-sm text-zinc-500 hover:text-zinc-900"
         >
           ← 选题库
         </Link>
         <div className="min-w-0 flex-1">
-          <h1 className="truncate text-lg font-semibold leading-7">
+          <h1 className="truncate text-lg font-semibold leading-7 text-zinc-900">
             {data.topic.title}
           </h1>
           {data.topic.hook && (
-            <p className="truncate text-xs text-zinc-500">
+            <p className="truncate text-xs text-zinc-400">
               「{data.topic.hook}」
             </p>
           )}
@@ -249,7 +252,7 @@ export default function Editor({ id }: { id: number }) {
           <select
             value={status}
             onChange={(e) => setStatus(e.target.value)}
-            className="rounded-lg border border-zinc-800 bg-zinc-900 px-2.5 py-1.5 text-zinc-200 outline-none focus:border-amber-500/60"
+            className={INPUT_CLS}
           >
             {CONTENT_STATUSES.map((s) => (
               <option key={s} value={s}>
@@ -264,7 +267,7 @@ export default function Editor({ id }: { id: number }) {
             type="date"
             value={planned}
             onChange={(e) => setPlanned(e.target.value)}
-            className="rounded-lg border border-zinc-800 bg-zinc-900 px-2.5 py-1.5 text-zinc-200 outline-none focus:border-amber-500/60"
+            className={INPUT_CLS}
           />
         </label>
         <label className="flex items-center gap-2 text-zinc-500">
@@ -273,17 +276,17 @@ export default function Editor({ id }: { id: number }) {
             type="date"
             value={published}
             onChange={(e) => setPublished(e.target.value)}
-            className="rounded-lg border border-zinc-800 bg-zinc-900 px-2.5 py-1.5 text-zinc-200 outline-none focus:border-amber-500/60"
+            className={INPUT_CLS}
           />
         </label>
         <button
           onClick={save}
           className={`ml-auto text-xs ${
             saveState === 'error'
-              ? 'text-red-400 hover:underline'
+              ? 'text-red-500 hover:underline'
               : saveState === 'saved'
-                ? 'text-zinc-500'
-                : 'text-amber-400'
+                ? 'text-zinc-400'
+                : 'text-amber-600'
           }`}
         >
           {saveLabel}
@@ -293,7 +296,7 @@ export default function Editor({ id }: { id: number }) {
       <div className="flex flex-col gap-4 lg:flex-row">
         {/* 左：编辑区（输入层 + 高亮层叠加） */}
         <section className="min-w-0 flex-1">
-          <div className="relative h-[55vh] overflow-hidden rounded-xl border border-zinc-800 bg-zinc-900/40 lg:h-[calc(100dvh-270px)] lg:min-h-[420px]">
+          <div className="relative h-[55vh] overflow-hidden rounded-xl border border-zinc-200 bg-white lg:h-[calc(100dvh-270px)] lg:min-h-[420px]">
             <div
               ref={overlayRef}
               aria-hidden
@@ -317,15 +320,15 @@ export default function Editor({ id }: { id: number }) {
               onScroll={syncScroll}
               spellCheck={false}
               placeholder="从这里开始写正文…"
-              className="absolute inset-0 z-10 h-full w-full resize-none bg-transparent p-4 text-[15px] leading-7 text-zinc-100 caret-amber-400 outline-none placeholder:text-zinc-600"
+              className="absolute inset-0 z-10 h-full w-full resize-none bg-transparent p-4 text-[15px] leading-7 text-zinc-900 caret-amber-600 outline-none placeholder:text-zinc-400"
             />
           </div>
           <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 px-1 text-xs text-zinc-500">
             <span>{wordCount} 字</span>
-            <span className={overLimit ? 'text-red-400' : ''}>
+            <span className={overLimit ? 'text-red-500' : ''}>
               约 {duration} 秒
             </span>
-            <span className={bannedTotal > 0 ? 'text-red-400' : ''}>
+            <span className={bannedTotal > 0 ? 'text-red-500' : ''}>
               禁词 {bannedTotal} 处
             </span>
           </div>
@@ -334,11 +337,11 @@ export default function Editor({ id }: { id: number }) {
         {/* 右：辅助栏 */}
         <aside className="w-full shrink-0 space-y-4 lg:w-80">
           {/* 一：结构模板 */}
-          <section className="rounded-xl border border-zinc-800 bg-zinc-900/40 p-4">
-            <h2 className="text-sm font-medium text-zinc-300">结构模板</h2>
+          <section className="rounded-xl border border-zinc-200 bg-white p-4">
+            <h2 className="text-sm font-medium text-zinc-700">结构模板</h2>
             <button
               onClick={insertTemplate}
-              className="mt-3 w-full rounded-lg bg-amber-500/90 px-3 py-2 text-sm font-medium text-zinc-950 hover:bg-amber-400"
+              className="mt-3 w-full rounded-lg bg-amber-500 px-3 py-2 text-sm font-medium text-white hover:bg-amber-400"
             >
               在光标处插入骨架
             </button>
@@ -348,17 +351,17 @@ export default function Editor({ id }: { id: number }) {
           </section>
 
           {/* 二：禁词检查 */}
-          <section className="rounded-xl border border-zinc-800 bg-zinc-900/40 p-4">
-            <h2 className="text-sm font-medium text-zinc-300">禁词检查</h2>
+          <section className="rounded-xl border border-zinc-200 bg-white p-4">
+            <h2 className="text-sm font-medium text-zinc-700">禁词检查</h2>
             <div className="mt-3">
               {found.length === 0 ? (
-                <p className="text-xs text-emerald-400">✓ 未发现禁词</p>
+                <p className="text-xs text-emerald-600">✓ 未发现禁词</p>
               ) : (
                 <div className="flex flex-wrap gap-1.5">
                   {found.map((f) => (
                     <span
                       key={f.word}
-                      className="rounded-md bg-red-500/15 px-2 py-1 text-xs text-red-300"
+                      className="rounded-md border border-red-200 bg-red-50 px-2 py-1 text-xs text-red-600"
                     >
                       {f.word} × {f.count}
                     </span>
@@ -366,8 +369,8 @@ export default function Editor({ id }: { id: number }) {
                 </div>
               )}
             </div>
-            <div className="mt-4 border-t border-zinc-800 pt-3">
-              <p className="text-xs text-zinc-500">
+            <div className="mt-4 border-t border-zinc-100 pt-3">
+              <p className="text-xs text-zinc-400">
                 自定义禁词（内置 {BUILTIN_BANNED_WORDS.length} 词不可删）
               </p>
               {customWords.length > 0 && (
@@ -379,10 +382,10 @@ export default function Editor({ id }: { id: number }) {
                         persistWords(customWords.filter((x) => x !== w))
                       }
                       title="点击删除"
-                      className="group rounded-md border border-zinc-700 px-2 py-1 text-xs text-zinc-300 hover:border-red-500/50 hover:text-red-300"
+                      className="group rounded-md border border-zinc-300 px-2 py-1 text-xs text-zinc-600 hover:border-red-300 hover:text-red-600"
                     >
                       {w}{' '}
-                      <span className="text-zinc-600 group-hover:text-red-400">
+                      <span className="text-zinc-400 group-hover:text-red-500">
                         ×
                       </span>
                     </button>
@@ -397,11 +400,11 @@ export default function Editor({ id }: { id: number }) {
                     if (e.key === 'Enter') addWord()
                   }}
                   placeholder="添加禁词…"
-                  className="min-w-0 flex-1 rounded-lg border border-zinc-700 bg-zinc-950 px-2.5 py-1.5 text-sm outline-none focus:border-amber-500/60"
+                  className="min-w-0 flex-1 rounded-lg border border-zinc-300 bg-white px-2.5 py-1.5 text-sm outline-none focus:border-amber-500"
                 />
                 <button
                   onClick={addWord}
-                  className="rounded-lg border border-zinc-700 px-2.5 py-1.5 text-sm text-zinc-300 hover:border-zinc-500"
+                  className="rounded-lg border border-zinc-300 px-2.5 py-1.5 text-sm text-zinc-600 hover:border-zinc-500 hover:text-zinc-900"
                 >
                   添加
                 </button>
@@ -410,23 +413,23 @@ export default function Editor({ id }: { id: number }) {
           </section>
 
           {/* 三：字数 · 时长 */}
-          <section className="rounded-xl border border-zinc-800 bg-zinc-900/40 p-4">
-            <h2 className="text-sm font-medium text-zinc-300">字数 · 时长</h2>
+          <section className="rounded-xl border border-zinc-200 bg-white p-4">
+            <h2 className="text-sm font-medium text-zinc-700">字数 · 时长</h2>
             <div className="mt-3 flex items-baseline gap-2">
               <span
                 className={`text-3xl font-semibold tabular-nums ${
-                  overLimit ? 'text-red-400' : ''
+                  overLimit ? 'text-red-500' : 'text-zinc-900'
                 }`}
               >
                 {duration}
               </span>
-              <span className="text-sm text-zinc-500">
+              <span className="text-sm text-zinc-400">
                 秒（{wordCount} 字 ÷ 4.5 字/秒）
               </span>
             </div>
             <p
               className={`mt-2 text-xs ${
-                overLimit ? 'text-red-400' : 'text-zinc-600'
+                overLimit ? 'text-red-500' : 'text-zinc-400'
               }`}
             >
               {overLimit
@@ -436,15 +439,15 @@ export default function Editor({ id }: { id: number }) {
           </section>
 
           {/* 四：人设红线 */}
-          <section className="rounded-xl border border-zinc-800 bg-zinc-900/40 p-4">
-            <h2 className="text-sm font-medium text-zinc-300">人设红线</h2>
+          <section className="rounded-xl border border-zinc-200 bg-white p-4">
+            <h2 className="text-sm font-medium text-zinc-700">人设红线</h2>
             <ul className="mt-3 space-y-2">
               {PERSONA_REDLINES.map((r) => (
                 <li
                   key={r}
-                  className="flex gap-2 text-xs leading-5 text-zinc-400"
+                  className="flex gap-2 text-xs leading-5 text-zinc-500"
                 >
-                  <span className="text-red-400">·</span>
+                  <span className="text-red-500">·</span>
                   {r}
                 </li>
               ))}

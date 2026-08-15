@@ -6,6 +6,12 @@ export function toDateInputValue(iso: string | null | undefined): string {
   return iso.slice(0, 10)
 }
 
+// 本地日期 → 'YYYY-MM-DD'（供 <input type="date"> 与按日聚合使用）
+export function localDateKey(d: Date): string {
+  const p = (n: number) => String(n).padStart(2, '0')
+  return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`
+}
+
 export function formatDateCN(iso: string | null | undefined): string {
   if (!iso) return ''
   const [y, m, d] = iso.slice(0, 10).split('-')

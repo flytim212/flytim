@@ -19,11 +19,11 @@ export const metadata: Metadata = {
     default: "flytim · 内容工作台",
     template: "%s · flytim",
   },
-  description: "单人内容创作工作台：选题、写稿、发布排期",
+  description: "单人内容创作工作台：选题、写稿、发布排期、数据回收",
 };
 
 export const viewport: Viewport = {
-  themeColor: "#09090b",
+  themeColor: "#fafafa",
 };
 
 export default function RootLayout({
@@ -32,7 +32,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="zh-CN" className="dark">
+    <html lang="zh-CN">
       <body
         className={`${geistSans.variable} ${geistMono.variable} min-h-dvh antialiased`}
       >

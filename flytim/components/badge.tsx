@@ -1,16 +1,16 @@
 import React from 'react'
 
 export const CATEGORY_STYLE: Record<string, string> = {
-  故事: 'border-amber-500/20 bg-amber-500/10 text-amber-300',
-  方法: 'border-sky-500/20 bg-sky-500/10 text-sky-300',
-  工具: 'border-emerald-500/20 bg-emerald-500/10 text-emerald-300',
+  故事: 'border-amber-200 bg-amber-50 text-amber-700',
+  方法: 'border-sky-200 bg-sky-50 text-sky-700',
+  工具: 'border-emerald-200 bg-emerald-50 text-emerald-700',
 }
 
 export const TOPIC_STATUS_STYLE: Record<string, string> = {
-  待写: 'border-zinc-500/20 bg-zinc-500/10 text-zinc-400',
-  已写稿: 'border-sky-500/20 bg-sky-500/10 text-sky-300',
-  已发布: 'border-emerald-500/20 bg-emerald-500/10 text-emerald-300',
-  已废弃: 'border-red-500/20 bg-red-500/10 text-red-400',
+  待写: 'border-zinc-200 bg-zinc-100 text-zinc-500',
+  已写稿: 'border-sky-200 bg-sky-50 text-sky-700',
+  已发布: 'border-emerald-200 bg-emerald-50 text-emerald-700',
+  已废弃: 'border-red-200 bg-red-50 text-red-600',
 }
 
 export function Badge({

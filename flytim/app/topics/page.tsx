@@ -57,11 +57,11 @@ export default function TopicsPage() {
   return (
     <div className="flex flex-col gap-4">
       <div className="flex items-center gap-3">
-        <h1 className="text-xl font-semibold">选题库</h1>
-        <span className="text-sm text-zinc-500">{filtered.length} 条</span>
+        <h1 className="text-xl font-semibold text-zinc-900">选题库</h1>
+        <span className="text-sm text-zinc-400">{filtered.length} 条</span>
         <button
           onClick={() => setModal({ mode: 'create' })}
-          className="ml-auto rounded-lg bg-amber-500/90 px-3.5 py-1.5 text-sm font-medium text-zinc-950 hover:bg-amber-400"
+          className="ml-auto rounded-lg bg-amber-500 px-3.5 py-1.5 text-sm font-medium text-white hover:bg-amber-400"
         >
           + 新建选题
         </button>
@@ -70,15 +70,15 @@ export default function TopicsPage() {
       {/* 筛选 */}
       <div className="flex flex-col gap-2 text-sm">
         <div className="flex flex-wrap items-center gap-1">
-          <span className="mr-1 text-xs text-zinc-600">分类</span>
+          <span className="mr-1 text-xs text-zinc-400">分类</span>
           {['全部', ...CATEGORIES].map((c) => (
             <button
               key={c}
               onClick={() => setCategory(c)}
               className={`rounded-md px-2.5 py-1 transition-colors ${
                 category === c
-                  ? 'bg-zinc-800 text-zinc-100'
-                  : 'text-zinc-500 hover:text-zinc-200'
+                  ? 'bg-zinc-900 text-white'
+                  : 'text-zinc-500 hover:text-zinc-900'
               }`}
             >
               {c}
@@ -86,15 +86,15 @@ export default function TopicsPage() {
           ))}
         </div>
         <div className="flex flex-wrap items-center gap-1">
-          <span className="mr-1 text-xs text-zinc-600">状态</span>
+          <span className="mr-1 text-xs text-zinc-400">状态</span>
           {['全部', ...TOPIC_STATUSES].map((s) => (
             <button
               key={s}
               onClick={() => setStatus(s)}
               className={`rounded-md px-2.5 py-1 transition-colors ${
                 status === s
-                  ? 'bg-zinc-800 text-zinc-100'
-                  : 'text-zinc-500 hover:text-zinc-200'
+                  ? 'bg-zinc-900 text-white'
+                  : 'text-zinc-500 hover:text-zinc-900'
               }`}
             >
               {s}
@@ -105,9 +105,9 @@ export default function TopicsPage() {
 
       {/* 列表 */}
       {topics === null ? (
-        <p className="py-10 text-center text-sm text-zinc-600">加载中…</p>
+        <p className="py-10 text-center text-sm text-zinc-400">加载中…</p>
       ) : filtered.length === 0 ? (
-        <p className="py-10 text-center text-sm text-zinc-600">
+        <p className="py-10 text-center text-sm text-zinc-400">
           没有符合筛选条件的选题
         </p>
       ) : (
@@ -115,7 +115,7 @@ export default function TopicsPage() {
           {filtered.map((t) => (
             <li
               key={t.id}
-              className="rounded-xl border border-zinc-800 bg-zinc-900/40 p-4 transition-colors hover:border-zinc-700"
+              className="rounded-xl border border-zinc-200 bg-white p-4 transition-colors hover:border-zinc-400"
             >
               <div className="flex flex-wrap items-center gap-2">
                 <Badge className={CATEGORY_STYLE[t.category] ?? ''}>
@@ -124,13 +124,15 @@ export default function TopicsPage() {
                 <Badge className={TOPIC_STATUS_STYLE[t.status] ?? ''}>
                   {t.status}
                 </Badge>
-                <span className="ml-auto text-xs text-zinc-600">
+                <span className="ml-auto text-xs text-zinc-400">
                   {formatDateCN(t.createdAt)}
                 </span>
               </div>
-              <h2 className="mt-2.5 font-medium leading-6">{t.title}</h2>
+              <h2 className="mt-2.5 font-medium leading-6 text-zinc-900">
+                {t.title}
+              </h2>
               {t.hook && (
-                <p className="mt-1 line-clamp-2 text-sm leading-6 text-zinc-400">
+                <p className="mt-1 line-clamp-2 text-sm leading-6 text-zinc-500">
                   「{t.hook}」
                 </p>
               )}
@@ -138,19 +140,19 @@ export default function TopicsPage() {
                 <button
                   onClick={() => startWriting(t.id)}
                   disabled={writingId === t.id}
-                  className="rounded-lg bg-amber-500/90 px-3 py-1.5 text-sm font-medium text-zinc-950 hover:bg-amber-400 disabled:opacity-50"
+                  className="rounded-lg bg-amber-500 px-3 py-1.5 text-sm font-medium text-white hover:bg-amber-400 disabled:opacity-50"
                 >
                   {writingId === t.id ? '打开中…' : '写稿'}
                 </button>
                 <button
                   onClick={() => setModal({ mode: 'edit', topic: t })}
-                  className="rounded-lg border border-zinc-700 px-3 py-1.5 text-sm text-zinc-300 hover:border-zinc-500"
+                  className="rounded-lg border border-zinc-300 px-3 py-1.5 text-sm text-zinc-600 hover:border-zinc-500 hover:text-zinc-900"
                 >
                   编辑
                 </button>
                 <button
                   onClick={() => remove(t)}
-                  className="rounded-lg px-3 py-1.5 text-sm text-zinc-500 hover:text-red-400"
+                  className="rounded-lg px-3 py-1.5 text-sm text-zinc-400 hover:text-red-500"
                 >
                   删除
                 </button>

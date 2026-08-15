@@ -3,6 +3,7 @@
 export const CATEGORIES = ['故事', '方法', '工具'] as const
 export const TOPIC_STATUSES = ['待写', '已写稿', '已发布', '已废弃'] as const
 export const CONTENT_STATUSES = ['写稿中', '已定稿', '已发布'] as const
+export const PLATFORMS = ['抖音', '小红书'] as const
 
 // 内置禁词（不可删除，可在编辑器另加自定义禁词）
 export const BUILTIN_BANNED_WORDS = [

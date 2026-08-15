@@ -24,3 +24,24 @@ export interface ContentDTO {
 export interface SettingsDTO {
   customBannedWords: string[]
 }
+
+export interface MetricDTO {
+  id: number
+  contentId: number
+  platform: string
+  date: string
+  views: number
+  completion3s: number | null
+  completionFull: number | null
+  likes: number
+  comments: number
+  saves: number
+  shares: number
+  newFans: number
+  iterationNote: string
+  createdAt: string
+  content: {
+    id: number
+    topic: { id: number; title: string; category: string; status: string }
+  }
+}
