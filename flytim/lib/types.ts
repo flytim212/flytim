@@ -45,3 +45,59 @@ export interface MetricDTO {
     topic: { id: number; title: string; category: string; status: string }
   }
 }
+
+// 知识库
+export interface SourceDTO {
+  id: number
+  type: string
+  title: string
+  author: string
+  url: string
+  description: string
+  status: string
+  tags: string
+  notes: string
+  createdAt: string
+  updatedAt: string
+}
+
+export interface CardDTO {
+  id: number
+  title: string
+  oneLiner: string
+  source: string
+  keyPoints: string
+  myExperience: string
+  scriptDraft: string
+  status: string
+  createdAt: string
+  updatedAt: string
+}
+
+export interface NoteDTO {
+  id: number
+  course: string
+  episode: string
+  content: string
+  createdAt: string
+  updatedAt: string
+}
+
+export interface CaseDTO {
+  id: number
+  date: string
+  trigger: string
+  emotionType: string
+  bodySignal: string
+  action: string
+  result: string
+  usableAsTopic: boolean
+  createdAt: string
+}
+
+export interface QuoteDTO {
+  id: number
+  text: string
+  source: string
+  createdAt: string
+}

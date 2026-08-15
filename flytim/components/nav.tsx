@@ -8,6 +8,8 @@ const LINKS = [
   { href: '/topics', label: '选题库' },
   { href: '/calendar', label: '发布日历' },
   { href: '/metrics', label: '数据中心' },
+  { href: '/knowledge', label: '知识库' },
+  { href: '/api-docs', label: 'API' },
 ]
 
 export default function Nav() {

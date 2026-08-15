@@ -5,6 +5,23 @@ export const TOPIC_STATUSES = ['待写', '已写稿', '已发布', '已废弃'] 
 export const CONTENT_STATUSES = ['写稿中', '已定稿', '已发布'] as const
 export const PLATFORMS = ['抖音', '小红书'] as const
 
+// 知识库
+export const SOURCE_TYPES = ['书籍', '视频', '课程', '文章', '播客', '其他'] as const
+export const SOURCE_STATUSES = ['待处理', '进行中', '已完成'] as const
+export const CARD_STATUSES = ['待补经历', '可写稿', '已发布'] as const
+export const EMOTION_TYPES = [
+  '焦虑',
+  '愤怒',
+  '悲伤',
+  '恐惧',
+  '羞愧',
+  '内疚',
+  '无力',
+  '喜悦',
+  '平静',
+  '其他',
+] as const
+
 // 内置禁词（不可删除，可在编辑器另加自定义禁词）
 export const BUILTIN_BANNED_WORDS = [
   '修行',

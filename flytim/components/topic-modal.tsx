@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { CATEGORIES, TOPIC_STATUSES } from '@/lib/constants'
-import { TopicDTO } from '@/lib/types'
+import { CaseDTO, TopicDTO } from '@/lib/types'
 
 export default function TopicModal({
   topic,
@@ -19,6 +19,16 @@ export default function TopicModal({
   const [status, setStatus] = useState<string>(topic?.status ?? '待写')
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
+  const [suggests, setSuggests] = useState<CaseDTO[]>([])
+
+  // 新建时拉取「可用作选题」的案例建议
+  useEffect(() => {
+    if (topic) return
+    fetch('/api/cases?usable=true')
+      .then((r) => r.json())
+      .then((d: CaseDTO[]) => setSuggests(d.slice(0, 5)))
+      .catch(() => {})
+  }, [topic])
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -59,6 +69,29 @@ export default function TopicModal({
         <h2 className="text-base font-medium text-zinc-900">
           {topic ? '编辑选题' : '新建选题'}
         </h2>
+
+        {!topic && suggests.length > 0 && (
+          <div className="space-y-1.5">
+            <p className="text-xs text-zinc-400">来自案例库的建议（点击采用）：</p>
+            <div className="flex flex-wrap gap-1.5">
+              {suggests.map((c) => (
+                <button
+                  key={c.id}
+                  type="button"
+                  onClick={() => {
+                    setTitle(c.trigger)
+                    setHook(c.bodySignal ? `那天${c.bodySignal}。` : '')
+                    setCategory('故事')
+                  }}
+                  className="max-w-full truncate rounded-md border border-zinc-200 bg-zinc-50 px-2 py-1 text-xs text-zinc-600 hover:border-amber-400 hover:text-amber-700"
+                  title={c.trigger}
+                >
+                  {c.emotionType} · {c.trigger}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
 
         <div className="space-y-1">
           <label className="text-xs text-zinc-400">标题 *</label>

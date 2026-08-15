@@ -195,9 +195,116 @@ async function seedMetrics() {
   console.log(`已写入 ${rows.length} 条演示数据。`)
 }
 
+async function seedKnowledge() {
+  if ((await prisma.source.count()) === 0) {
+    const sources = [
+      { type: '书籍', title: '纳瓦尔宝典', author: '埃里克·乔根森', status: '已完成', tags: '财富,判断力', description: '财富与幸福双轨框架' },
+      { type: '书籍', title: '被讨厌的勇气', author: '岸见一郎', status: '进行中', tags: '心理学', description: '课题分离' },
+      { type: '书籍', title: '卡片笔记写作法', author: '申克·阿伦斯', status: '待处理', tags: '写作,知识管理' },
+      { type: '视频', title: 'Leong 最近的选题节奏拆解', author: 'Leong', status: '进行中', tags: '对标', notes: '他连续 5 条都在讲失败经历，共鸣极强' },
+      { type: '课程', title: '口播表达训练营', author: '某训练营', status: '进行中', tags: '口播' },
+    ]
+    await prisma.source.createMany({ data: sources })
+  }
+  if ((await prisma.card.count()) === 0) {
+    await prisma.card.createMany({
+      data: [
+        {
+          title: '课题分离',
+          oneLiner: '分清「这是谁的课题」，只做自己课题的主人。',
+          source: '《被讨厌的勇气》',
+          keyPoints: '别人怎么评价你，是别人的课题\n你只对选择和行动负责\n干涉别人课题 = 越界',
+          myExperience: '发视频后疯狂刷评论区那年，我把「别人怎么看」当成了自己的课题。',
+          scriptDraft: '你有没有过这种时刻——发完一条视频，每五分钟刷一次评论区？',
+          status: '可写稿',
+        },
+        {
+          title: '特定知识',
+          oneLiner: '不会被外包、不会被 AI 替代的，是你独特经历的组合。',
+          source: '《纳瓦尔宝典》',
+          keyPoints: '特定知识来自你的经历与兴趣交叉点\n无法通过标准培训获得\n越个人化越有价值',
+          myExperience: '',
+          scriptDraft: '',
+          status: '待补经历',
+        },
+        {
+          title: '卡片笔记',
+          oneLiner: '想法不值得收藏，值得的是连接。',
+          source: '《卡片笔记写作法》',
+          keyPoints: '记笔记不是摘抄，是转译成自己的话\n卡片之间建立连接才有复利\n每天写 3 张，一年 1000 张',
+          myExperience: '我之前的收藏夹有 2000 条，一条都没用上。',
+          scriptDraft: '你收藏夹里躺着多少条「以后有用」的内容？',
+          status: '可写稿',
+        },
+      ],
+    })
+  }
+  if ((await prisma.note.count()) === 0) {
+    await prisma.note.createMany({
+      data: [
+        {
+          course: '口播表达训练营',
+          episode: '第 1 集 · 前三秒',
+          content: '## 要点\n- 前 3 秒只做一件事：给「停下」的理由\n- 「大家好」是负资产\n- 钩子类型：反常识 / 具体 数字 / 真话\n\n## 练习\n把每条视频的第一句话单独写出来，念 10 遍。',
+        },
+        {
+          course: '口播表达训练营',
+          episode: '第 2 集 · 节奏',
+          content: '## 要点\n- 口播 4.5 字/秒，75 秒 ≈ 340 字\n- 每 15 秒需要一个「钩子回补」\n\n## 自查\n语速快不等于节奏好。',
+        },
+      ],
+    })
+  }
+  if ((await prisma.case.count()) === 0) {
+    await prisma.case.createMany({
+      data: [
+        {
+          date: dateOffset(-2),
+          trigger: '刷到同行爆款，数据是我 50 倍',
+          emotionType: '焦虑',
+          bodySignal: '胸口发紧，反复刷新',
+          action: '关掉手机去楼下走了 20 分钟',
+          result: '回来写完了拖了 3 天的稿子',
+          usableAsTopic: true,
+        },
+        {
+          date: dateOffset(-5),
+          trigger: '评论区有人说我装',
+          emotionType: '愤怒',
+          bodySignal: '手心出汗，打字变快',
+          action: '写了一段反击又删了',
+          result: '没发出去，第二天看没那么气了',
+          usableAsTopic: false,
+        },
+        {
+          date: dateOffset(-8),
+          trigger: '第一条破万播放',
+          emotionType: '喜悦',
+          bodySignal: '全程傻笑，睡得很晚',
+          action: '立刻复盘了开头三秒',
+          result: '总结出「真话开头」方法',
+          usableAsTopic: true,
+        },
+      ],
+    })
+  }
+  if ((await prisma.quote.count()) === 0) {
+    await prisma.quote.createMany({
+      data: [
+        { text: '想法不值得收藏，值得的是连接。', source: '卡片笔记' },
+        { text: '刷数据的那一刻，你不是创作者，是赌徒。', source: '自写' },
+        { text: '崩溃不能白崩。', source: '自写' },
+        { text: '把「大家好」换成一句真话。', source: '训练营第 1 集' },
+      ],
+    })
+  }
+  console.log('知识库种子数据已就绪。')
+}
+
 async function main() {
   if ((await prisma.topic.count()) === 0) await seedTopics()
   await seedMetrics()
+  await seedKnowledge()
 }
 
 main()

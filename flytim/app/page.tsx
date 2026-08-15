@@ -16,6 +16,16 @@ const MODULES = [
     title: '数据中心',
     desc: '录入各平台数据，看趋势与分类表现，沉淀迭代日志。',
   },
+  {
+    href: '/knowledge',
+    title: '知识库',
+    desc: '导入书籍、视频、课程；概念卡、笔记、情绪案例、金句统一沉淀。',
+  },
+  {
+    href: '/api-docs',
+    title: 'API 接入',
+    desc: '全部功能 API 化，含 AI 专用入口：全局上下文 + 跨库搜索。',
+  },
 ]
 
 export default function Home() {
@@ -44,7 +54,7 @@ export default function Home() {
       </div>
 
       <p className="text-xs text-zinc-400">
-        后续模块：知识库 · 灵感箱 · 复盘（按阶段开发中）
+        后续模块：灵感箱 · 复盘（按阶段开发中）
       </p>
     </div>
   )

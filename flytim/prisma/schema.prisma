@@ -9,13 +9,14 @@ datasource db {
 
 // 选题
 model Topic {
-  id        Int       @id @default(autoincrement())
-  title     String
-  hook      String    @default("") // 开头钩子
-  category  String    @default("故事") // 故事 | 方法 | 工具
-  status    String    @default("待写") // 待写 | 已写稿 | 已发布 | 已废弃
-  createdAt DateTime  @default(now())
-  contents  Content[]
+  id           Int       @id @default(autoincrement())
+  title        String
+  hook         String    @default("") // 开头钩子
+  category     String    @default("故事") // 故事 | 方法 | 工具
+  status       String    @default("待写") // 待写 | 已写稿 | 已发布 | 已废弃
+  linkedCardId Int? // 关联概念卡
+  createdAt    DateTime  @default(now())
+  contents     Content[]
 }
 
 // 文案（与选题一对一）
@@ -57,4 +58,64 @@ model Metric {
 model Setting {
   key   String @id
   value String // JSON 字符串
+}
+
+// 资源库：书籍 / 视频 / 课程 / 文章 / 播客 等导入的一切
+model Source {
+  id          Int      @id @default(autoincrement())
+  type        String   @default("书籍") // 书籍 | 视频 | 课程 | 文章 | 播客 | 其他
+  title       String
+  author      String   @default("")
+  url         String   @default("")
+  description String   @default("")
+  status      String   @default("待处理") // 待处理 | 进行中 | 已完成
+  tags        String   @default("") // 逗号分隔
+  notes       String   @default("")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// 概念卡
+model Card {
+  id           Int      @id @default(autoincrement())
+  title        String
+  oneLiner     String   @default("") // 一句话版本
+  source       String   @default("") // 来源（书名/课程/视频名）
+  keyPoints    String   @default("") // 核心要点，一行一条
+  myExperience String   @default("") // 我的真实经历
+  scriptDraft  String   @default("") // 口播话术草稿
+  status       String   @default("待补经历") // 待补经历 | 可写稿 | 已发布
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+// 课程笔记（课程 → 集数 两级归档）
+model Note {
+  id        Int      @id @default(autoincrement())
+  course    String
+  episode   String   @default("")
+  content   String   @default("") // markdown
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// 案例库（情绪数据库）
+model Case {
+  id            Int      @id @default(autoincrement())
+  date          DateTime @default(now())
+  trigger       String   @default("") // 触发事件
+  emotionType   String   @default("其他") // 焦虑 | 愤怒 | 悲伤 | 恐惧 | 羞愧 | 内疚 | 无力 | 喜悦 | 平静 | 其他
+  bodySignal    String   @default("") // 身体信号
+  action        String   @default("") // 当时行动
+  result        String   @default("") // 结果
+  usableAsTopic Boolean  @default(false) // 可用作选题
+  createdAt     DateTime @default(now())
+}
+
+// 金句库
+model Quote {
+  id        Int      @id @default(autoincrement())
+  text      String
+  source    String   @default("") // 出处
+  createdAt DateTime @default(now())
 }
