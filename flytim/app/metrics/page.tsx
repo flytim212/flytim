@@ -43,6 +43,10 @@ export default function MetricsPage() {
   const [paste, setPaste] = useState('')
   const [pasteMsg, setPasteMsg] = useState('')
 
+  // 截图识别
+  const [imgBusy, setImgBusy] = useState(false)
+  const [imgMsg, setImgMsg] = useState('')
+
   useEffect(() => {
     setDate(localDateKey(new Date()))
     load()
@@ -138,6 +142,42 @@ export default function MetricsPage() {
     setPasteMsg(`已填入 ${matched.length} 项：${matched.join('、')}`)
   }
 
+  // 截图识别 → 自动填表（需在「设置」配好视觉模型）
+  async function recognizeImage(file: File) {
+    setImgBusy(true)
+    setImgMsg('识别中…')
+    const image = await new Promise<string>((resolve, reject) => {
+      const fr = new FileReader()
+      fr.onload = () => resolve(String(fr.result))
+      fr.onerror = () => reject(new Error('读图失败'))
+      fr.readAsDataURL(file)
+    }).catch(() => '')
+    if (!image) {
+      setImgBusy(false)
+      setImgMsg('读图失败，换一张试试')
+      return
+    }
+    const res = await fetch('/api/ai/vision-metrics', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ image }),
+    })
+    setImgBusy(false)
+    const d = await res.json()
+    if (!res.ok) {
+      setImgMsg(d.error || '识别失败')
+      return
+    }
+    setNums((prev) => {
+      const next = { ...prev }
+      for (const [k, v] of Object.entries(d.values as Record<string, number>)) {
+        if (v != null) next[k] = String(v)
+      }
+      return next
+    })
+    setImgMsg(`截图识别成功，已填入 ${d.matched.length} 项 ✓`)
+  }
+
   async function submit() {
     setError('')
     if (!contentId) {
@@ -223,10 +263,40 @@ export default function MetricsPage() {
             >
               解析并填入下方表单
             </button>
-            {pasteMsg && (
-              <span className="text-xs text-zinc-600">{pasteMsg}</span>
+            <label
+              className={`cursor-pointer rounded-lg border border-zinc-300 px-3 py-1.5 text-sm text-zinc-600 hover:border-amber-400 hover:text-amber-700 ${
+                imgBusy ? 'pointer-events-none opacity-50' : ''
+              }`}
+            >
+              {imgBusy ? '识别中…' : '或：上传截图自动识别'}
+              <input
+                type="file"
+                accept="image/*"
+                className="hidden"
+                disabled={imgBusy}
+                onChange={(e) => {
+                  const f = e.target.files?.[0]
+                  e.target.value = ''
+                  if (f) recognizeImage(f)
+                }}
+              />
+            </label>
+            {pasteMsg && <span className="text-xs text-zinc-600">{pasteMsg}</span>}
+            {imgMsg && (
+              <span
+                className={`text-xs ${imgMsg.includes('成功') ? 'text-emerald-600' : 'text-zinc-600'}`}
+              >
+                {imgMsg}
+              </span>
             )}
           </div>
+          <p className="mt-2 text-xs text-zinc-400">
+            截图识别需先在
+            <a href="/settings" className="mx-1 text-amber-600 hover:underline">
+              设置
+            </a>
+            里配好 AI（视觉模型，如 glm-4.5v）
+          </p>
         </details>
       </section>
 

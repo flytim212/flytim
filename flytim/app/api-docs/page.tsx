@@ -1,3 +1,7 @@
+'use client'
+
+import { useEffect, useState } from 'react'
+
 const GROUPS: {
   name: string
   desc: string
@@ -16,19 +20,35 @@ const GROUPS: {
         method: 'GET',
         path: '/api/ai/overview',
         desc: '一次拉取全工作台上下文：各模块计数、分类表现、最近选题与迭代日志、概念卡/金句素材、写稿规则（禁词/时长/结构）、全部端点索引',
-        example: 'curl http://localhost:3000/api/ai/overview',
+        example: 'curl {origin}/api/ai/overview',
       },
       {
         method: 'GET',
         path: '/api/ai/search?q=关键词&limit=5',
         desc: '跨七张表全局搜索：选题/文案/概念卡/资源/案例/笔记/金句，返回分组结果与摘要',
-        example: 'curl "http://localhost:3000/api/ai/search?q=课题分离"',
+        example: 'curl "{origin}/api/ai/search?q=课题分离"',
       },
       {
         method: 'POST',
         path: '/api/ai/parse-metrics',
         desc: '把创作者后台复制的数据文字解析成结构化字段（播放/点赞/完播率…，支持 万/逗号/% 单位），返回 {values, matched}',
-        example: 'curl -X POST http://localhost:3000/api/ai/parse-metrics -H "Content-Type: application/json" -d \'{"text":"播放量 1.2万 点赞 356 3秒完播率 25.3%"}\'',
+        example: 'curl -X POST {origin}/api/ai/parse-metrics -H "Content-Type: application/json" -d \'{"text":"播放量 1.2万 点赞 356 3秒完播率 25.3%"}\'',
+      },
+      {
+        method: 'POST',
+        path: '/api/ai/vision-metrics',
+        desc: '截图识别数据：传创作者后台截图（dataURL），用「设置」里配好的视觉模型读数，返回 {values, matched}',
+        example: 'curl -X POST {origin}/api/ai/vision-metrics -H "Content-Type: application/json" -d \'{"image":"data:image/png;base64,…"}\'',
+      },
+      {
+        method: 'POST',
+        path: '/api/ai/test',
+        desc: '测试 AI 服务连通性（用已保存的配置发一句话），返回 {ok, reply, model}',
+      },
+      {
+        method: 'GET · PUT',
+        path: '/api/settings/ai',
+        desc: 'AI 服务配置：GET 读取（key 只回掩码）；PUT 保存 {baseUrl, apiKey, model}（apiKey 留空=保持不变）。任何 OpenAI 兼容接口均可',
       },
     ],
   },
@@ -89,21 +109,31 @@ const METHOD_STYLE: Record<string, string> = {
   PATCH: 'bg-amber-50 text-amber-700 border-amber-200',
   'PATCH · DELETE': 'bg-amber-50 text-amber-700 border-amber-200',
   PUT: 'bg-amber-50 text-amber-700 border-amber-200',
+  'GET · PUT': 'bg-sky-50 text-sky-700 border-sky-200',
   DELETE: 'bg-red-50 text-red-600 border-red-200',
 }
 
 export default function ApiDocsPage() {
+  const [origin, setOrigin] = useState('')
+  useEffect(() => {
+    setOrigin(window.location.origin)
+  }, [])
+  const base = origin || 'http://localhost:3000'
+
   return (
     <div className="flex flex-col gap-6">
       <div>
         <h1 className="text-xl font-semibold text-zinc-900">API 接入文档</h1>
         <p className="mt-2 text-sm leading-6 text-zinc-500">
           全部功能均已 API 化，无需鉴权（单人本地使用）。给 AI
-          编程工具、自动化脚本、快捷指令直接调用。
+          编程工具、自动化脚本、快捷指令直接调用。当前服务地址：
+          <code className="rounded bg-zinc-100 px-1.5 py-0.5 font-mono text-xs text-zinc-800">
+            {base}
+          </code>
         </p>
         <div className="mt-3 rounded-xl border border-zinc-200 bg-white p-4 text-sm leading-7">
           <p className="font-medium text-zinc-700">AI 接入建议（写给 AI 的提示词）：</p>
-          <pre className="mt-2 overflow-x-auto rounded-lg bg-zinc-950 p-3 text-xs leading-6 text-zinc-100">{`这是一个内容创作工作台的 API（base: http://localhost:3000）。
+          <pre className="mt-2 overflow-x-auto rounded-lg bg-zinc-950 p-3 text-xs leading-6 text-zinc-100">{`这是一个内容创作工作台的 API（base: ${base}）。
 1. 先 GET /api/ai/overview 了解全局：选题进度、分类表现、禁词与结构规则；
 2. 需要找素材时用 GET /api/ai/search?q=关键词；
 3. 写稿遵守 overview.writingRules（禁词/75秒/五段结构），保存走 POST /api/contents + PATCH /api/contents/{id}；
@@ -134,7 +164,7 @@ export default function ApiDocsPage() {
                 <p className="mt-1 text-zinc-500">{e.desc}</p>
                 {e.example && (
                   <pre className="mt-1.5 overflow-x-auto rounded-lg bg-zinc-950 px-3 py-2 font-mono text-xs leading-6 text-zinc-100">
-                    {e.example}
+                    {e.example.replaceAll('{origin}', base)}
                   </pre>
                 )}
               </li>

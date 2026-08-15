@@ -10,6 +10,7 @@ const LINKS = [
   { href: '/metrics', label: '数据中心' },
   { href: '/knowledge', label: '知识库' },
   { href: '/api-docs', label: 'API' },
+  { href: '/settings', label: '设置' },
 ]
 
 export default function Nav() {
