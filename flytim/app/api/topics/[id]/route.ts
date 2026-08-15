@@ -9,7 +9,16 @@ export async function PATCH(request: Request, { params }: Params) {
   const id = Number(params.id)
   const data = await request.json().catch(() => ({}))
 
-  const update: { title?: string; hook?: string; category?: string; status?: string } = {}
+  const update: {
+    title?: string
+    hook?: string
+    category?: string
+    status?: string
+    audience?: string
+    demand?: string
+    painPoint?: string
+    solution?: string
+  } = {}
   if (typeof data.title === 'string') {
     const title = data.title.trim()
     if (!title) return NextResponse.json({ error: '标题不能为空' }, { status: 400 })
@@ -21,6 +30,9 @@ export async function PATCH(request: Request, { params }: Params) {
   }
   if (typeof data.status === 'string' && (TOPIC_STATUSES as readonly string[]).includes(data.status)) {
     update.status = data.status
+  }
+  for (const k of ['audience', 'demand', 'painPoint', 'solution'] as const) {
+    if (typeof data[k] === 'string') update[k] = (data[k] as string).trim()
   }
 
   const topic = await prisma.topic.update({ where: { id }, data: update })

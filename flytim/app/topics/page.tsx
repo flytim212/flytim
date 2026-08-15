@@ -136,6 +136,13 @@ export default function TopicsPage() {
                   「{t.hook}」
                 </p>
               )}
+              {(t.audience || t.painPoint) && (
+                <p className="mt-1.5 line-clamp-1 text-xs text-zinc-400">
+                  {t.audience && <span>{t.audience}</span>}
+                  {t.audience && t.painPoint && <span className="mx-1.5">·</span>}
+                  {t.painPoint && <span>痛点：{t.painPoint}</span>}
+                </p>
+              )}
               <div className="mt-3 flex gap-2">
                 <button
                   onClick={() => startWriting(t.id)}

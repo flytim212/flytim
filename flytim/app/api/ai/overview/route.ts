@@ -17,7 +17,7 @@ export async function GET() {
     quotes,
     settings,
   ] = await Promise.all([
-    prisma.topic.findMany({ orderBy: { createdAt: 'desc' }, select: { id: true, title: true, hook: true, category: true, status: true, linkedCardId: true, createdAt: true } }),
+    prisma.topic.findMany({ orderBy: { createdAt: 'desc' }, select: { id: true, title: true, hook: true, category: true, status: true, linkedCardId: true, audience: true, demand: true, painPoint: true, solution: true, createdAt: true } }),
     prisma.content.findMany({ where: { publishedDate: { not: null } }, orderBy: { publishedDate: 'desc' }, select: { id: true, topicId: true, publishedDate: true, wordCount: true, durationEst: true } }),
     prisma.metric.findMany({ orderBy: { date: 'desc' }, take: 200 }),
     prisma.card.findMany({ orderBy: { createdAt: 'desc' }, select: { id: true, title: true, oneLiner: true, status: true, source: true } }),
@@ -123,6 +123,10 @@ export async function GET() {
       ],
       customBannedWords,
       structure: ['钩子（前3秒）', '事件', '内心实况', '方法', '结尾互动提问'],
+      // 选题定位框架：新建选题时应先想清这四要素（POST /api/topics 支持同名可选字段）
+      topicPositioning: ['audience 核心人群', 'demand 需求问题', 'painPoint 痛点', 'solution 解决方案'],
+      // 生产纪律：选题限时 2 分钟，写稿+剪辑限时 5 分钟/条
+      timeLimits: { topicMinutes: 2, scriptMinutes: 5 },
     },
     // 可用端点索引（AI 自助发现）
     api: {

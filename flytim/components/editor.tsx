@@ -30,6 +30,9 @@ export default function Editor({ id }: { id: number }) {
   const [newWord, setNewWord] = useState('')
   const [saveState, setSaveState] = useState<'saved' | 'dirty' | 'saving' | 'error'>('saved')
   const [savedAt, setSavedAt] = useState('')
+  // 写稿计时器（目标 5 分钟一条）
+  const [seconds, setSeconds] = useState(0)
+  const [timing, setTiming] = useState(false)
   const loadedRef = useRef(false)
   const lastSavedRef = useRef('')
   const textareaRef = useRef<HTMLTextAreaElement | null>(null)
@@ -104,6 +107,15 @@ export default function Editor({ id }: { id: number }) {
     const timer = setTimeout(save, 1000)
     return () => clearTimeout(timer)
   }, [snapshot, save])
+
+  // 计时器
+  useEffect(() => {
+    if (!timing) return
+    const t = setInterval(() => setSeconds((s) => s + 1), 1000)
+    return () => clearInterval(t)
+  }, [timing])
+  const mmss = `${String(Math.floor(seconds / 60)).padStart(2, '0')}:${String(seconds % 60).padStart(2, '0')}`
+  const overTime = seconds > 300
 
   // 禁词：内置 + 自定义，去重
   const allWords = useMemo(
@@ -336,6 +348,74 @@ export default function Editor({ id }: { id: number }) {
 
         {/* 右：辅助栏 */}
         <aside className="w-full shrink-0 space-y-4 lg:w-80">
+          {/* 〇：本条定位 */}
+          {(data.topic.audience ||
+            data.topic.demand ||
+            data.topic.painPoint ||
+            data.topic.solution) && (
+            <section className="rounded-xl border border-zinc-200 bg-white p-4">
+              <h2 className="text-sm font-medium text-zinc-700">本条定位</h2>
+              <dl className="mt-3 space-y-2">
+                {(
+                  [
+                    ['核心人群', data.topic.audience],
+                    ['需求问题', data.topic.demand],
+                    ['痛点', data.topic.painPoint],
+                    ['解决方案', data.topic.solution],
+                  ] as const
+                )
+                  .filter(([, v]) => v)
+                  .map(([k, v]) => (
+                    <div key={k} className="flex gap-2 text-xs leading-5">
+                      <dt className="w-14 shrink-0 text-zinc-400">{k}</dt>
+                      <dd className="min-w-0 text-zinc-700">{v}</dd>
+                    </div>
+                  ))}
+              </dl>
+            </section>
+          )}
+
+          {/* 〇：写稿计时 */}
+          <section className="rounded-xl border border-zinc-200 bg-white p-4">
+            <div className="flex items-center justify-between">
+              <h2 className="text-sm font-medium text-zinc-700">写稿计时</h2>
+              <span className="text-xs text-zinc-400">目标 5 分钟 / 条</span>
+            </div>
+            <div className="mt-3 flex items-center gap-3">
+              <span
+                className={`text-3xl font-semibold tabular-nums ${
+                  overTime ? 'text-red-500' : seconds > 0 ? 'text-zinc-900' : 'text-zinc-300'
+                }`}
+              >
+                {mmss}
+              </span>
+              <div className="flex gap-1.5">
+                <button
+                  onClick={() => setTiming((t) => !t)}
+                  className="rounded-lg bg-amber-500 px-3 py-1.5 text-xs font-medium text-white hover:bg-amber-400"
+                >
+                  {timing ? '暂停' : '开始'}
+                </button>
+                <button
+                  onClick={() => {
+                    setTiming(false)
+                    setSeconds(0)
+                  }}
+                  className="rounded-lg border border-zinc-300 px-3 py-1.5 text-xs text-zinc-600 hover:border-zinc-500 hover:text-zinc-900"
+                >
+                  重置
+                </button>
+              </div>
+            </div>
+            <p
+              className={`mt-2 text-xs ${overTime ? 'text-red-500' : 'text-zinc-400'}`}
+            >
+              {overTime
+                ? '超时了——先写完再改，别在半路抠字'
+                : '选题限时 2 分钟、写稿限时 5 分钟，逼自己快'}
+            </p>
+          </section>
+
           {/* 一：结构模板 */}
           <section className="rounded-xl border border-zinc-200 bg-white p-4">
             <h2 className="text-sm font-medium text-zinc-700">结构模板</h2>

@@ -37,6 +37,10 @@ export async function POST(request: Request) {
       category: (CATEGORIES as readonly string[]).includes(data.category) ? data.category : '故事',
       status: (TOPIC_STATUSES as readonly string[]).includes(data.status) ? data.status : '待写',
       linkedCardId,
+      audience: typeof data.audience === 'string' ? data.audience.trim() : '',
+      demand: typeof data.demand === 'string' ? data.demand.trim() : '',
+      painPoint: typeof data.painPoint === 'string' ? data.painPoint.trim() : '',
+      solution: typeof data.solution === 'string' ? data.solution.trim() : '',
     },
   })
   return NextResponse.json(topic, { status: 201 })

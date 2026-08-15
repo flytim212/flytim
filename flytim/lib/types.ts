@@ -4,6 +4,10 @@ export interface TopicDTO {
   hook: string
   category: string
   status: string
+  audience?: string
+  demand?: string
+  painPoint?: string
+  solution?: string
   createdAt: string
 }
 

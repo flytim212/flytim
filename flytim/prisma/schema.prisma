@@ -15,6 +15,10 @@ model Topic {
   category     String    @default("故事") // 故事 | 方法 | 工具
   status       String    @default("待写") // 待写 | 已写稿 | 已发布 | 已废弃
   linkedCardId Int? // 关联概念卡
+  audience     String    @default("") // 定位：核心人群
+  demand       String    @default("") // 定位：需求问题
+  painPoint    String    @default("") // 定位：痛点
+  solution     String    @default("") // 定位：解决方案
   createdAt    DateTime  @default(now())
   contents     Content[]
 }
