@@ -1,0 +1,40 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// 选题
+model Topic {
+  id        Int       @id @default(autoincrement())
+  title     String
+  hook      String    @default("") // 开头钩子
+  category  String    @default("故事") // 故事 | 方法 | 工具
+  status    String    @default("待写") // 待写 | 已写稿 | 已发布 | 已废弃
+  createdAt DateTime  @default(now())
+  contents  Content[]
+}
+
+// 文案（与选题一对一）
+model Content {
+  id           Int       @id @default(autoincrement())
+  topicId      Int       @unique
+  body         String    @default("")
+  wordCount    Int       @default(0)
+  durationEst  Int       @default(0) // 预估口播时长（秒）
+  status       String    @default("写稿中") // 写稿中 | 已定稿 | 已发布
+  plannedDate  DateTime? // 计划发布日
+  publishedDate DateTime? // 实际发布日
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  topic        Topic     @relation(fields: [topicId], references: [id], onDelete: Cascade)
+}
+
+// 键值配置（自定义禁词等）
+model Setting {
+  key   String @id
+  value String // JSON 字符串
+}
