@@ -301,10 +301,47 @@ async function seedKnowledge() {
   console.log('知识库种子数据已就绪。')
 }
 
+async function seedBenchmarks() {
+  const count = await prisma.benchmark.count()
+  if (count > 0) return
+  await prisma.benchmark.createMany({
+    data: [
+      {
+        url: 'https://v.douyin.com/lJ4Dy2MWaSk/',
+        author: 'Leong',
+        fans: '41.7万',
+        title: '明确核心人群 需求问题 痛点 解决方案 建立循环素材库',
+        publishedAt: '2026-06-27',
+        likes: 765,
+        comments: 344,
+        opening: '如果你是做知识付费的 IP 或者老板，一小时产出三条内容，方法就三步。',
+        argument:
+          '严格控制时间：选题不超过 2 分钟，创作剪辑不超过 5 分钟。\n洗稿一查二改三创新：只洗开场白、核心观点+论证、结尾；先精简，AI 润色，最后人工处理。',
+        ending: '按这套循环做，素材库越滚越大，产出越来越快。',
+        whyHit: '把「产量焦虑」变成可执行流水线：限时+三维度洗稿，直接可抄',
+        audience: '知识付费 IP / 做内容的老板',
+        demand: '想高频产出但写不出',
+        painPoint: '一条内容磨半天，产量上不去',
+        solution: '限时流水线 + 循环素材库',
+        status: '已拆解',
+      },
+      {
+        author: '某职场博主',
+        title: '在职场被小人栽赃别忍！这套反击思路自保又解气',
+        likes: 12000,
+        whyHit: '情绪词「栽赃/反击/解气」+ 明确指令「别忍」，立场鲜明易站队',
+        status: '待拆解',
+      },
+    ],
+  })
+  console.log('已写入对标爆款示例。')
+}
+
 async function main() {
   if ((await prisma.topic.count()) === 0) await seedTopics()
   await seedMetrics()
   await seedKnowledge()
+  await seedBenchmarks()
 }
 
 main()

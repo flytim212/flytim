@@ -29,6 +29,10 @@ export async function POST(request: Request) {
     Number.isInteger(data.linkedCardId) && (data.linkedCardId as number) > 0
       ? (data.linkedCardId as number)
       : null
+  const linkedBenchmarkId =
+    Number.isInteger(data.linkedBenchmarkId) && (data.linkedBenchmarkId as number) > 0
+      ? (data.linkedBenchmarkId as number)
+      : null
 
   const topic = await prisma.topic.create({
     data: {
@@ -37,6 +41,7 @@ export async function POST(request: Request) {
       category: (CATEGORIES as readonly string[]).includes(data.category) ? data.category : '故事',
       status: (TOPIC_STATUSES as readonly string[]).includes(data.status) ? data.status : '待写',
       linkedCardId,
+      linkedBenchmarkId,
       audience: typeof data.audience === 'string' ? data.audience.trim() : '',
       demand: typeof data.demand === 'string' ? data.demand.trim() : '',
       painPoint: typeof data.painPoint === 'string' ? data.painPoint.trim() : '',

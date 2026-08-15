@@ -57,7 +57,7 @@ const GROUPS: {
     desc: '内容生产主线。',
     endpoints: [
       { method: 'GET', path: '/api/topics?category=故事&status=待写', desc: '选题列表（可筛选）' },
-      { method: 'POST', path: '/api/topics', desc: '新建选题 {title, hook, category, status, linkedCardId?}' },
+      { method: 'POST', path: '/api/topics', desc: '新建选题 {title, hook, category, status, linkedCardId?, linkedBenchmarkId?, audience?, demand?, painPoint?, solution?}' },
       { method: 'PATCH', path: '/api/topics/{id}', desc: '更新选题' },
       { method: 'DELETE', path: '/api/topics/{id}', desc: '删除选题（级联删除文案）' },
       { method: 'POST', path: '/api/contents', desc: '进入写稿（get-or-create）{topicId} → 返回文案 id' },
@@ -72,6 +72,18 @@ const GROUPS: {
       { method: 'POST', path: '/api/metrics', desc: '录数据 {contentId, platform(抖音|小红书), date, views, completion3s, completionFull, likes, comments, saves, shares, newFans, iterationNote}' },
       { method: 'PATCH', path: '/api/metrics/{id}', desc: '改数值/迭代备注' },
       { method: 'DELETE', path: '/api/metrics/{id}', desc: '删除记录' },
+    ],
+  },
+  {
+    name: '对标爆款库（洗稿工作流）',
+    desc: '收集同赛道博主爆款 → 拆三维度（开场白/观点论证/结尾）→ 转选题洗稿（一查二改三创新）。',
+    endpoints: [
+      { method: 'GET', path: '/api/benchmarks?status=已拆解&q=关键词', desc: '对标列表（按点赞降序，爆款优先）' },
+      { method: 'POST', path: '/api/benchmarks', desc: '收集爆款：单条 {title, author?, url?, likes?, opening?, argument?, ending?, whyHit?, audience?…} 或批量 {items:[{title,author,likes,url}]}' },
+      { method: 'GET', path: '/api/benchmarks/{id}', desc: '对标详情（三维度拆解全文）' },
+      { method: 'PATCH', path: '/api/benchmarks/{id}', desc: '补拆解 / 改状态（待拆解|已拆解|已洗稿）；数据字段支持 "1.2万" 写法' },
+      { method: 'DELETE', path: '/api/benchmarks/{id}', desc: '删除对标（自动解除选题关联）' },
+      { method: 'POST', path: '/api/topics', desc: '对标转选题：传 {title, linkedBenchmarkId, audience…}，写稿时编辑器侧栏自动显示洗稿参考' },
     ],
   },
   {

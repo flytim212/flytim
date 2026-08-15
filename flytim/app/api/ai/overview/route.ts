@@ -15,15 +15,17 @@ export async function GET() {
     sources,
     cases,
     quotes,
+    benchmarks,
     settings,
   ] = await Promise.all([
-    prisma.topic.findMany({ orderBy: { createdAt: 'desc' }, select: { id: true, title: true, hook: true, category: true, status: true, linkedCardId: true, audience: true, demand: true, painPoint: true, solution: true, createdAt: true } }),
+    prisma.topic.findMany({ orderBy: { createdAt: 'desc' }, select: { id: true, title: true, hook: true, category: true, status: true, linkedCardId: true, linkedBenchmarkId: true, audience: true, demand: true, painPoint: true, solution: true, createdAt: true } }),
     prisma.content.findMany({ where: { publishedDate: { not: null } }, orderBy: { publishedDate: 'desc' }, select: { id: true, topicId: true, publishedDate: true, wordCount: true, durationEst: true } }),
     prisma.metric.findMany({ orderBy: { date: 'desc' }, take: 200 }),
     prisma.card.findMany({ orderBy: { createdAt: 'desc' }, select: { id: true, title: true, oneLiner: true, status: true, source: true } }),
     prisma.source.findMany({ orderBy: { createdAt: 'desc' }, select: { id: true, type: true, title: true, author: true, status: true } }),
     prisma.case.findMany({ orderBy: { date: 'desc' }, select: { id: true, date: true, trigger: true, emotionType: true, usableAsTopic: true } }),
     prisma.quote.findMany({ orderBy: { createdAt: 'desc' }, select: { id: true, text: true, source: true } }),
+    prisma.benchmark.findMany({ orderBy: { likes: 'desc' }, take: 30, select: { id: true, title: true, author: true, likes: true, views: true, status: true, opening: true, argument: true, ending: true, whyHit: true } }),
     prisma.setting.findUnique({ where: { key: 'customBannedWords' } }),
   ])
 
@@ -106,6 +108,8 @@ export async function GET() {
     quotes,
     casesUsable: cases.filter((c) => c.usableAsTopic),
     sources,
+    // 对标爆款（洗稿素材源：同赛道博主的爆款拆解）
+    benchmarks,
     // 写稿约束
     writingRules: {
       charsPerSecond: 4.5,
@@ -127,10 +131,16 @@ export async function GET() {
       topicPositioning: ['audience 核心人群', 'demand 需求问题', 'painPoint 痛点', 'solution 解决方案'],
       // 生产纪律：选题限时 2 分钟，写稿+剪辑限时 5 分钟/条
       timeLimits: { topicMinutes: 2, scriptMinutes: 5 },
+      // 洗稿纪律：一查二改三创新，只洗开场白/核心观点+论证/结尾三维度；论证必须换成用户自己的真实经历
+      rewriteRules: {
+        steps: '一查（拆对标）→ 二改（换经历论证）→ 三创新（结构借、魂是自己的）',
+        dimensions: ['开场白', '核心观点+论证', '结尾'],
+      },
     },
     // 可用端点索引（AI 自助发现）
     api: {
       topics: 'GET/POST /api/topics, PATCH/DELETE /api/topics/{id}',
+      benchmarks: 'GET/POST /api/benchmarks, GET/PATCH/DELETE /api/benchmarks/{id}（对标爆款，POST 支持 items 批量）',
       contents: 'GET/POST /api/contents, GET/PATCH/DELETE /api/contents/{id}',
       metrics: 'GET/POST /api/metrics, PATCH/DELETE /api/metrics/{id}',
       sources: 'GET/POST /api/sources, PATCH/DELETE /api/sources/{id}',

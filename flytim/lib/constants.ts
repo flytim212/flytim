@@ -9,6 +9,7 @@ export const PLATFORMS = ['抖音', '小红书'] as const
 export const SOURCE_TYPES = ['书籍', '视频', '课程', '文章', '播客', '其他'] as const
 export const SOURCE_STATUSES = ['待处理', '进行中', '已完成'] as const
 export const CARD_STATUSES = ['待补经历', '可写稿', '已发布'] as const
+export const BENCHMARK_STATUSES = ['待拆解', '已拆解', '已洗稿'] as const
 export const EMOTION_TYPES = [
   '焦虑',
   '愤怒',

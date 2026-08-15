@@ -9,18 +9,45 @@ datasource db {
 
 // 选题
 model Topic {
-  id           Int       @id @default(autoincrement())
-  title        String
-  hook         String    @default("") // 开头钩子
-  category     String    @default("故事") // 故事 | 方法 | 工具
-  status       String    @default("待写") // 待写 | 已写稿 | 已发布 | 已废弃
-  linkedCardId Int? // 关联概念卡
-  audience     String    @default("") // 定位：核心人群
-  demand       String    @default("") // 定位：需求问题
-  painPoint    String    @default("") // 定位：痛点
-  solution     String    @default("") // 定位：解决方案
-  createdAt    DateTime  @default(now())
-  contents     Content[]
+  id                 Int       @id @default(autoincrement())
+  title              String
+  hook               String    @default("") // 开头钩子
+  category           String    @default("故事") // 故事 | 方法 | 工具
+  status             String    @default("待写") // 待写 | 已写稿 | 已发布 | 已废弃
+  linkedCardId       Int? // 关联概念卡
+  linkedBenchmarkId  Int? // 关联对标爆款（洗稿来源）
+  audience           String    @default("") // 定位：核心人群
+  demand             String    @default("") // 定位：需求问题
+  painPoint          String    @default("") // 定位：痛点
+  solution           String    @default("") // 定位：解决方案
+  createdAt          DateTime  @default(now())
+  contents           Content[]
+}
+
+// 对标爆款：同赛道博主的爆款视频（查—拆—洗的源头）
+model Benchmark {
+  id          Int      @id @default(autoincrement())
+  url         String   @default("") // 视频链接
+  author      String   @default("") // 博主名
+  fans        String   @default("") // 博主粉丝量（文字即可，如「41.7万」）
+  title       String // 爆款标题
+  publishedAt String   @default("") // 发布日期（文字）
+  views       Int      @default(0) // 播放
+  likes       Int      @default(0) // 点赞
+  comments    Int      @default(0) // 评论
+  saves       Int      @default(0) // 收藏
+  shares      Int      @default(0) // 转发
+  opening     String   @default("") // 拆解：开场白原文（洗稿维度1）
+  argument    String   @default("") // 拆解：核心观点+论证原文（洗稿维度2）
+  ending      String   @default("") // 拆解：结尾原文（洗稿维度3）
+  whyHit      String   @default("") // 我的分析：为什么爆
+  audience    String   @default("") // 对方定位：核心人群
+  demand      String   @default("") // 对方定位：需求问题
+  painPoint   String   @default("") // 对方定位：痛点
+  solution    String   @default("") // 对方定位：解决方案
+  status      String   @default("待拆解") // 待拆解 | 已拆解 | 已洗稿
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
 // 文案（与选题一对一）

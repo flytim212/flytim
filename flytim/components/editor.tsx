@@ -10,7 +10,7 @@ import {
   PERSONA_REDLINES,
   STRUCTURE_TEMPLATE,
 } from '@/lib/constants'
-import { ContentDTO, TopicDTO } from '@/lib/types'
+import { ContentDTO, TopicDTO, BenchmarkDTO } from '@/lib/types'
 import { toDateInputValue } from '@/lib/format'
 import { Badge, CATEGORY_STYLE, TOPIC_STATUS_STYLE } from '@/components/badge'
 
@@ -33,6 +33,8 @@ export default function Editor({ id }: { id: number }) {
   // 写稿计时器（目标 5 分钟一条）
   const [seconds, setSeconds] = useState(0)
   const [timing, setTiming] = useState(false)
+  // 洗稿参考：选题关联的对标爆款
+  const [bench, setBench] = useState<BenchmarkDTO | null>(null)
   const loadedRef = useRef(false)
   const lastSavedRef = useRef('')
   const textareaRef = useRef<HTMLTextAreaElement | null>(null)
@@ -57,6 +59,13 @@ export default function Editor({ id }: { id: number }) {
         published: toDateInputValue(content.publishedDate),
       }
       setData(content)
+      // 选题关联了对标 → 拉取洗稿参考
+      if (content.topic?.linkedBenchmarkId) {
+        fetch(`/api/benchmarks/${content.topic.linkedBenchmarkId}`)
+          .then((r) => (r.ok ? r.json() : null))
+          .then((b) => b && setBench(b))
+          .catch(() => {})
+      }
       setBody(initial.body)
       setStatus(initial.status)
       setPlanned(initial.planned)
@@ -348,6 +357,48 @@ export default function Editor({ id }: { id: number }) {
 
         {/* 右：辅助栏 */}
         <aside className="w-full shrink-0 space-y-4 lg:w-80">
+          {/* 洗稿参考：一查二改三创新 */}
+          {bench && (
+            <section className="rounded-xl border border-amber-300 bg-amber-50/70 p-4">
+              <div className="flex items-center justify-between">
+                <h2 className="text-sm font-medium text-zinc-800">洗稿参考（对标）</h2>
+                <a
+                  href="/benchmarks"
+                  className="text-xs text-zinc-400 hover:text-amber-700"
+                >
+                  对标库 →
+                </a>
+              </div>
+              <p className="mt-1 text-xs leading-5 text-zinc-500">
+                {bench.title}
+                {bench.author && <span className="text-zinc-400"> · {bench.author}</span>}
+                {bench.likes > 0 && (
+                  <span className="ml-1 tabular-nums text-zinc-400">赞 {bench.likes}</span>
+                )}
+              </p>
+              <div className="mt-3 space-y-2.5">
+                {(
+                  [
+                    ['① 开场白', bench.opening, '换成你的真话和数字，别照抄'],
+                    ['② 观点+论证', bench.argument, '观点可借，论证必须换你的经历'],
+                    ['③ 结尾', bench.ending, '互动提问换成你的问法'],
+                  ] as const
+                )
+                  .filter(([, v]) => v)
+                  .map(([label, value, tip]) => (
+                    <div key={label} className="rounded-lg border border-amber-200 bg-white p-2.5">
+                      <p className="text-xs font-medium text-zinc-700">{label}</p>
+                      <p className="mt-1 text-xs leading-5 text-zinc-500">{value}</p>
+                      <p className="mt-1.5 text-xs leading-4 text-amber-700">改法：{tip}</p>
+                    </div>
+                  ))}
+              </div>
+              <p className="mt-3 border-t border-amber-200 pt-2 text-xs leading-5 text-zinc-500">
+                一查（已拆好）→ 二改（换你的经历论证）→ 三创新（结构借，魂必须是你的）
+              </p>
+            </section>
+          )}
+
           {/* 〇：本条定位 */}
           {(data.topic.audience ||
             data.topic.demand ||

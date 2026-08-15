@@ -4,11 +4,38 @@ export interface TopicDTO {
   hook: string
   category: string
   status: string
+  linkedCardId?: number | null
+  linkedBenchmarkId?: number | null
   audience?: string
   demand?: string
   painPoint?: string
   solution?: string
   createdAt: string
+}
+
+export interface BenchmarkDTO {
+  id: number
+  url: string
+  author: string
+  fans: string
+  title: string
+  publishedAt: string
+  views: number
+  likes: number
+  comments: number
+  saves: number
+  shares: number
+  opening: string
+  argument: string
+  ending: string
+  whyHit: string
+  audience: string
+  demand: string
+  painPoint: string
+  solution: string
+  status: string
+  createdAt: string
+  updatedAt: string
 }
 
 export interface ContentDTO {
