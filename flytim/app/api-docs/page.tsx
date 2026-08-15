@@ -24,6 +24,12 @@ const GROUPS: {
         desc: '跨七张表全局搜索：选题/文案/概念卡/资源/案例/笔记/金句，返回分组结果与摘要',
         example: 'curl "http://localhost:3000/api/ai/search?q=课题分离"',
       },
+      {
+        method: 'POST',
+        path: '/api/ai/parse-metrics',
+        desc: '把创作者后台复制的数据文字解析成结构化字段（播放/点赞/完播率…，支持 万/逗号/% 单位），返回 {values, matched}',
+        example: 'curl -X POST http://localhost:3000/api/ai/parse-metrics -H "Content-Type: application/json" -d \'{"text":"播放量 1.2万 点赞 356 3秒完播率 25.3%"}\'',
+      },
     ],
   },
   {

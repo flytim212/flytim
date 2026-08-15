@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { CATEGORIES, PLATFORMS } from '@/lib/constants'
 import { MetricDTO } from '@/lib/types'
 import { formatDateCN, localDateKey } from '@/lib/format'
+import { parseMetricsText } from '@/lib/metric-paste'
 import { CategoryBars, TrendChart } from '@/components/metrics-charts'
 
 type ContentOption = { id: number; label: string }
@@ -37,6 +38,10 @@ export default function MetricsPage() {
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
   const [savedTick, setSavedTick] = useState(0)
+
+  // 粘贴解析
+  const [paste, setPaste] = useState('')
+  const [pasteMsg, setPasteMsg] = useState('')
 
   useEffect(() => {
     setDate(localDateKey(new Date()))
@@ -116,6 +121,23 @@ export default function MetricsPage() {
     [records],
   )
 
+  // 粘贴后台数据 → 自动填表
+  function doParse() {
+    const { values, matched } = parseMetricsText(paste)
+    if (matched.length === 0) {
+      setPasteMsg('没识别到数据，试试「播放量 1234 点赞 56」这种格式')
+      return
+    }
+    setNums((prev) => {
+      const next = { ...prev }
+      for (const [k, v] of Object.entries(values)) {
+        if (v != null) next[k] = String(v)
+      }
+      return next
+    })
+    setPasteMsg(`已填入 ${matched.length} 项：${matched.join('、')}`)
+  }
+
   async function submit() {
     setError('')
     if (!contentId) {
@@ -176,6 +198,37 @@ export default function MetricsPage() {
           迭代日志（{noteCount}）→
         </Link>
       </div>
+
+      {/* 粘贴解析 */}
+      <section className="rounded-xl border border-amber-200 bg-amber-50/60 p-5">
+        <details>
+          <summary className="cursor-pointer text-sm font-medium text-zinc-700">
+            不想逐项填？粘贴后台数据，自动填表
+          </summary>
+          <p className="mt-2 text-xs text-zinc-400">
+            从抖音 / 小红书创作者后台把数据复制成一串文字粘贴进来（支持 万 / 逗号 / % 单位）
+          </p>
+          <textarea
+            value={paste}
+            onChange={(e) => setPaste(e.target.value)}
+            rows={3}
+            placeholder={'例：播放量 1.2万  点赞 356  评论 23  收藏 45  转发 12  涨粉 8\n3秒完播率 25.3%  完播率 11.2%'}
+            className="mt-2 w-full resize-none rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm outline-none focus:border-amber-500"
+          />
+          <div className="mt-2 flex flex-wrap items-center gap-3">
+            <button
+              onClick={doParse}
+              disabled={!paste.trim()}
+              className="rounded-lg bg-amber-500 px-4 py-1.5 text-sm font-medium text-white hover:bg-amber-400 disabled:opacity-50"
+            >
+              解析并填入下方表单
+            </button>
+            {pasteMsg && (
+              <span className="text-xs text-zinc-600">{pasteMsg}</span>
+            )}
+          </div>
+        </details>
+      </section>
 
       {/* 录入 */}
       <section className="rounded-xl border border-zinc-200 bg-white p-5">
