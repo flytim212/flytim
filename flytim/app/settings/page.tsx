@@ -12,12 +12,19 @@ const PRESETS = [
   { label: 'OpenAI', baseUrl: 'https://api.openai.com/v1', model: 'gpt-4o-mini' },
 ]
 
-type ConfigDTO = { baseUrl: string; model: string; hasKey: boolean; maskedKey: string }
+type ConfigDTO = {
+  baseUrl: string
+  model: string
+  imageModel: string
+  hasKey: boolean
+  maskedKey: string
+}
 
 export default function SettingsPage() {
   const [baseUrl, setBaseUrl] = useState('')
   const [apiKey, setApiKey] = useState('')
   const [model, setModel] = useState('')
+  const [imageModel, setImageModel] = useState('')
   const [loaded, setLoaded] = useState<ConfigDTO | null>(null)
   const [saving, setSaving] = useState(false)
   const [testing, setTesting] = useState(false)
@@ -32,6 +39,7 @@ export default function SettingsPage() {
         setLoaded(d)
         setBaseUrl(d.baseUrl)
         setModel(d.model)
+        setImageModel(d.imageModel)
       })
   }, [])
 
@@ -44,6 +52,7 @@ export default function SettingsPage() {
       body: JSON.stringify({
         baseUrl,
         model,
+        imageModel,
         // 输入框为空 = 不改 key（掩码提示占位）
         apiKey: apiKey.trim() || undefined,
       }),
@@ -68,7 +77,12 @@ export default function SettingsPage() {
     await fetch('/api/settings/ai', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ baseUrl, model, apiKey: apiKey.trim() || undefined }),
+      body: JSON.stringify({
+        baseUrl,
+        model,
+        imageModel,
+        apiKey: apiKey.trim() || undefined,
+      }),
     })
     const res = await fetch('/api/ai/test', {
       method: 'POST',
@@ -124,11 +138,20 @@ export default function SettingsPage() {
             />
           </label>
           <label className="space-y-1">
-            <span className="text-xs text-zinc-400">模型</span>
+            <span className="text-xs text-zinc-400">模型（文本/视觉）</span>
             <input
               value={model}
               onChange={(e) => setModel(e.target.value)}
               placeholder="glm-4.5v（截图识别需视觉模型）"
+              className={INPUT_CLS}
+            />
+          </label>
+          <label className="space-y-1">
+            <span className="text-xs text-zinc-400">图片生成模型</span>
+            <input
+              value={imageModel}
+              onChange={(e) => setImageModel(e.target.value)}
+              placeholder="cogman-1.5-flash（分镜图片生成用）"
               className={INPUT_CLS}
             />
           </label>

@@ -42,6 +42,32 @@ const GROUPS: {
       },
       {
         method: 'POST',
+        path: '/api/ai/storyboard-generate',
+        desc: '分镜工作流·第一步：{title, viewpoint} → 文本 AI 生成抖音精选脚本+分镜+seedance 提示词并入库，返回含整体思路与全部分镜',
+        example: 'curl -X POST {origin}/api/ai/storyboard-generate -H "Content-Type: application/json" -d \'{"title":"被裁员那天","viewpoint":"崩溃不喊停，换个地方扛"}\'',
+      },
+      {
+        method: 'POST',
+        path: '/api/storyboards/{id}/shots/{shotId}/image',
+        desc: '分镜工作流·第二步：给单个分镜生成图片（用 seedance 提示词调图片模型，竖屏 9:16），body 可传 {prompt} 覆盖',
+      },
+      {
+        method: 'POST',
+        path: '/api/storyboards/{id}/images',
+        desc: '分镜工作流·批量：顺序生成该脚本全部未生成的分镜图片，返回 {generated, failed, errors}',
+      },
+      {
+        method: 'GET',
+        path: '/api/storyboards / /api/storyboards/{id}',
+        desc: '分镜脚本列表（含进度）/ 详情（含全部分镜：时间段、口播、画面、提示词、图片URL），按时间轴顺序输出',
+      },
+      {
+        method: 'PATCH',
+        path: '/api/shots/{shotId}',
+        desc: '改单个分镜（口播/画面/提示词/时间），{resetImage:true} 可清掉旧图重生成',
+      },
+      {
+        method: 'POST',
         path: '/api/ai/test',
         desc: '测试 AI 服务连通性（用已保存的配置发一句话），返回 {ok, reply, model}',
       },

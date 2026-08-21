@@ -7,6 +7,7 @@ const LINKS = [
   { href: '/', label: '首页' },
   { href: '/topics', label: '选题库' },
   { href: '/benchmarks', label: '对标库' },
+  { href: '/storyboards', label: '分镜' },
   { href: '/calendar', label: '发布日历' },
   { href: '/metrics', label: '数据中心' },
   { href: '/knowledge', label: '知识库' },

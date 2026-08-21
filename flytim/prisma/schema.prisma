@@ -24,6 +24,37 @@ model Topic {
   contents           Content[]
 }
 
+// 分镜脚本：题目+核心观点 → AI 生成脚本/分镜/seedance 提示词 → 图片生成
+model Storyboard {
+  id        Int      @id @default(autoincrement())
+  topicId   Int? // 可关联选题（也可独立生成）
+  title     String // 选题题目
+  viewpoint String   @default("") // 核心观点
+  overall   String   @default("") // 整体思路
+  duration  Int      @default(0) // 总时长（秒）
+  status    String   @default("脚本生成中") // 脚本生成中 | 脚本就绪 | 图片生成中 | 完成 | 失败
+  error     String   @default("") // 最近一次失败原因
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  shots     Shot[]
+}
+
+// 分镜条目：时间段 + 口播文案 + 画面描述 + seedance 提示词 + 图片
+model Shot {
+  id           Int         @id @default(autoincrement())
+  storyboardId Int
+  storyboard   Storyboard  @relation(fields: [storyboardId], references: [id], onDelete: Cascade)
+  order        Int // 顺序（从 1 开始）
+  startSec     Int    @default(0) // 开始秒
+  endSec       Int    @default(0) // 结束秒
+  narration    String @default("") // 口播文案
+  sceneDesc    String @default("") // 画面描述
+  imagePrompt  String @default("") // seedance 提示词（图片/视频生成用）
+  imageUrl     String @default("") // 已生成图片的访问路径
+  imageStatus  String @default("未生成") // 未生成 | 已生成 | 生成中 | 失败
+  imageError   String @default("")
+}
+
 // 对标爆款：同赛道博主的爆款视频（查—拆—洗的源头）
 model Benchmark {
   id          Int      @id @default(autoincrement())

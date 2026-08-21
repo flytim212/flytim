@@ -16,6 +16,7 @@ export async function PUT(request: Request) {
     baseUrl: typeof data.baseUrl === 'string' ? data.baseUrl : undefined,
     apiKey: typeof data.apiKey === 'string' ? data.apiKey : undefined,
     model: typeof data.model === 'string' ? data.model : undefined,
+    imageModel: typeof data.imageModel === 'string' ? data.imageModel : undefined,
   })
   return NextResponse.json(maskConfig(cfg))
 }
