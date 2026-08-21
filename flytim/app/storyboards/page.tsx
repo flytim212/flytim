@@ -57,6 +57,7 @@ export default function StoryboardsPage() {
   const [detail, setDetail] = useState<StoryboardDTO | null>(null)
   const [title, setTitle] = useState('')
   const [viewpoint, setViewpoint] = useState('')
+  const [duration, setDuration] = useState('300') // 秒，精选视频普遍 5 分钟以上
   const [busy, setBusy] = useState(false)
   const [msg, setMsg] = useState('')
   const [msgOk, setMsgOk] = useState(false)
@@ -77,19 +78,25 @@ export default function StoryboardsPage() {
     loadList()
   }, [loadList])
 
-  // 生成脚本：题目+核心观点 → AI
+  // 生成脚本：题目+核心观点+时长 → AI
   async function generate() {
+    const sec = Number(duration) || 0
     if (!title.trim() || !viewpoint.trim()) {
       setMsgOk(false)
       setMsg('题目和核心观点都要填')
       return
     }
+    if (sec < 30 || sec > 1800) {
+      setMsgOk(false)
+      setMsg('时长需在 30~1800 秒之间（0.5~30 分钟）')
+      return
+    }
     setBusy(true)
-    setMsg('脚本生成中，约需 10~30 秒…')
+    setMsg('脚本生成中，长视频脚本约需 20~90 秒…')
     const res = await fetch('/api/ai/storyboard-generate', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ title: title.trim(), viewpoint: viewpoint.trim() }),
+      body: JSON.stringify({ title: title.trim(), viewpoint: viewpoint.trim(), duration: sec }),
     })
     setBusy(false)
     const d = await res.json()
@@ -159,7 +166,7 @@ export default function StoryboardsPage() {
 
       {/* 生成表单 */}
       <section className="rounded-xl border border-amber-200 bg-amber-50/60 p-5">
-        <div className="grid gap-3 sm:grid-cols-2">
+        <div className="grid gap-3 sm:grid-cols-[1fr_1fr_180px]">
           <label className="space-y-1">
             <span className="text-xs text-zinc-400">选题题目 *</span>
             <input
@@ -179,6 +186,20 @@ export default function StoryboardsPage() {
               className={INPUT_CLS}
               disabled={busy}
             />
+          </label>
+          <label className="space-y-1">
+            <span className="text-xs text-zinc-400">视频时长（秒）*</span>
+            <input
+              value={duration}
+              onChange={(e) => setDuration(e.target.value.replace(/\D/g, '').slice(0, 4))}
+              placeholder="如 300"
+              inputMode="numeric"
+              className={INPUT_CLS}
+              disabled={busy}
+            />
+            <span className="block text-xs text-zinc-400">
+              ≈ {Math.round(((Number(duration) || 0) / 60) * 10) / 10} 分钟 · 30~1800 秒
+            </span>
           </label>
         </div>
         <div className="mt-3 flex flex-wrap items-center gap-3">
@@ -287,20 +308,20 @@ export default function StoryboardsPage() {
                     key={shot.id}
                     className="rounded-xl border border-zinc-200 bg-white p-4 sm:flex sm:gap-4"
                   >
-                    {/* 图片区 */}
-                    <div className="mx-auto w-36 shrink-0 sm:mx-0">
+                    {/* 图片区（16:9 横屏） */}
+                    <div className="w-full shrink-0 sm:w-64">
                       {shot.imageUrl ? (
                         // eslint-disable-next-line @next/next/no-img-element
                         <img
                           src={shot.imageUrl}
                           alt={`分镜${shot.order}`}
-                          className="w-36 rounded-lg border border-zinc-200 object-cover"
+                          className="aspect-video w-full rounded-lg border border-zinc-200 object-cover"
                         />
                       ) : (
                         <button
                           onClick={() => genShotImage(detail.id, shot)}
                           disabled={imgBusyShot === shot.id || imgBusyAll}
-                          className="flex h-64 w-36 flex-col items-center justify-center gap-2 rounded-lg border border-dashed border-zinc-300 text-xs text-zinc-400 hover:border-amber-400 hover:text-amber-600 disabled:opacity-50"
+                          className="flex aspect-video w-full flex-col items-center justify-center gap-2 rounded-lg border border-dashed border-zinc-300 text-xs text-zinc-400 hover:border-amber-400 hover:text-amber-600 disabled:opacity-50"
                         >
                           {imgBusyShot === shot.id ? (
                             '生成中…'

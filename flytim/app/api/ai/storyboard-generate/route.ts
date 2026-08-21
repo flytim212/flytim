@@ -6,17 +6,23 @@ export const dynamic = 'force-dynamic'
 export const maxDuration = 120
 
 // 生成提示词：抖音精选视频专属脚本 + 分镜 + seedance 图片提示词
-const PROMPT = `你是抖音精选视频的资深编导。根据选题题目和核心观点，生成一条竖屏口播视频的完整分镜脚本。
+// 时长自定义（精选视频普遍 5 分钟以上），分镜数随时长伸缩
+function buildPrompt(duration: number): string {
+  const minShots = Math.max(6, Math.floor(duration / 30))
+  const maxShots = Math.max(8, Math.ceil(duration / 15))
+  const minutes = Math.round((duration / 60) * 10) / 10
+  return `你是抖音精选视频的资深编导。根据选题题目和核心观点，生成一条横屏口播视频的完整分镜脚本。
 
 要求：
-1. 总时长 60~75 秒，切 6~8 个分镜，每镜 6~14 秒；
+1. 总时长约 ${duration} 秒（约 ${minutes} 分钟），切 ${minShots}~${maxShots} 个分镜，每镜 8~30 秒按内容节奏分配；时长较长时按「开场钩子 → 展开（2~4 个段落/论点，层层递进）→ 收尾互动」组织；
 2. 口播文案（narration）要口语化、有钩子：第一镜前 3 秒必须抛出冲突或结论，最后一镜是互动提问；每镜口播字数 ≈ 该镜秒数 × 4.5；
-3. 整体思路（overall）：3~5 句话讲清这条视频怎么起、怎么落，为什么这样设计；
-4. 每镜的 imagePrompt 是给图片/视频生成模型（Seedance）的提示词：中文，描述画面主体、动作、构图、景别、光线与色调，适配 9:16 竖屏，风格统一为真实感生活摄影/微电影质感，人物用「一个30多岁的中国男人/女人」这类泛指，不要出现具体明星姓名，不要出现文字与字幕；
+3. 整体思路（overall）：3~8 句话讲清这条视频怎么起、怎么落，为什么这样设计；
+4. 每镜的 imagePrompt 是给图片/视频生成模型（Seedance）的提示词：中文，描述画面主体、动作、构图、景别、光线与色调，适配 16:9 横屏，风格统一为真实感生活摄影/微电影质感，人物用「一个30多岁的中国男人/女人」这类泛指，不要出现具体明星姓名，不要出现文字与字幕；
 5. sceneDesc 是给剪辑师看的画面说明，一句话即可。
 
 只输出一个 JSON 对象，不要输出任何其他文字或代码块标记：
 {"overall":"整体思路","shots":[{"startSec":0,"endSec":9,"narration":"口播文案","sceneDesc":"画面说明","imagePrompt":"seedance 提示词"}]}`
+}
 
 type AiShot = {
   startSec?: unknown
@@ -26,7 +32,8 @@ type AiShot = {
   imagePrompt?: unknown
 }
 
-// POST {title, viewpoint, topicId?} → 调文本 AI 生成分镜脚本并入库
+// POST {title, viewpoint, duration?, topicId?} → 调文本 AI 生成分镜脚本并入库
+// duration：目标时长（秒），30~1800，默认 300（精选视频普遍 5 分钟以上）
 export async function POST(request: Request) {
   const cfg = await getAiConfig()
   if (!cfg.apiKey) {
@@ -41,6 +48,7 @@ export async function POST(request: Request) {
   const viewpoint = typeof data.viewpoint === 'string' ? data.viewpoint.trim() : ''
   if (!title) return NextResponse.json({ error: '题目不能为空' }, { status: 400 })
   if (!viewpoint) return NextResponse.json({ error: '核心观点不能为空' }, { status: 400 })
+  const duration = Math.min(1800, Math.max(30, Math.round(Number(data.duration) || 300)))
 
   // 先建记录（脚本生成中）
   const storyboard = await prisma.storyboard.create({
@@ -56,7 +64,7 @@ export async function POST(request: Request) {
     messages: [
       {
         role: 'user',
-        content: `选题题目：${title}\n核心观点：${viewpoint}\n\n${PROMPT}`,
+        content: `选题题目：${title}\n核心观点：${viewpoint}\n\n${buildPrompt(duration)}`,
       },
     ],
     temperature: 0.7,
@@ -106,14 +114,14 @@ export async function POST(request: Request) {
     return NextResponse.json({ error, storyboardId: storyboard.id }, { status: 502 })
   }
 
-  const duration = valid[valid.length - 1].endSec
+  const actualDuration = valid[valid.length - 1].endSec
   await prisma.$transaction([
     prisma.shot.createMany({ data: valid }),
     prisma.storyboard.update({
       where: { id: storyboard.id },
       data: {
         overall: String(parsed.overall ?? '').trim(),
-        duration,
+        duration: actualDuration,
         status: '脚本就绪',
         error: '',
       },

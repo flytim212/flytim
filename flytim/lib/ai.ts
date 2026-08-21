@@ -130,7 +130,7 @@ export async function generateImage(
       body: JSON.stringify({
         model: cfg.imageModel,
         prompt,
-        size: '768x1344', // 9:16 竖屏
+        size: '1344x768', // 16:9 横屏（精选视频为横屏）
       }),
     })
     if (!res.ok) {
