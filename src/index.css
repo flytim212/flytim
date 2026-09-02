@@ -1,0 +1,187 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ---------- 全局：深绿毛毡桌面 ---------- */
+body {
+  margin: 0;
+  min-height: 100dvh;
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei',
+    'Segoe UI', Roboto, sans-serif;
+  background:
+    radial-gradient(ellipse at 50% -10%, rgba(255, 255, 255, 0.07), transparent 55%),
+    radial-gradient(ellipse at 50% 115%, rgba(0, 0, 0, 0.35), transparent 55%),
+    linear-gradient(180deg, #1f5333 0%, #1a472a 45%, #143723 100%);
+  background-attachment: fixed;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ---------- 纯 CSS 扑克牌 ---------- */
+.poker-card {
+  position: relative;
+  aspect-ratio: 5 / 7;
+  border-radius: 9%;
+  background: linear-gradient(160deg, #ffffff 0%, #f6f3ea 100%);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.45), inset 0 0 0 1px rgba(0, 0, 0, 0.07);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  user-select: none;
+  flex: none;
+}
+
+/* 左上角 rank + 花色 */
+.poker-card .pc-corner {
+  position: absolute;
+  top: 4%;
+  left: 7%;
+  line-height: 1.02;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: calc(var(--pc-size, 44px) * 0.3);
+  letter-spacing: -0.02em;
+}
+
+/* 中央花色 */
+.poker-card .pc-center {
+  font-size: calc(var(--pc-size, 44px) * 0.5);
+  opacity: 0.92;
+  transform: translateY(4%);
+}
+
+.poker-card.pc-red {
+  color: #c0392b;
+}
+.poker-card.pc-black {
+  color: #1c1c1e;
+}
+
+/* 牌背：暗红斜纹 */
+.poker-card.pc-back {
+  background:
+    repeating-linear-gradient(45deg, #6e1a26 0 5px, #84242f 5px 10px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.45), inset 0 0 0 2px rgba(255, 248, 240, 0.85);
+}
+.poker-card.pc-back::after {
+  content: '';
+  position: absolute;
+  inset: 7%;
+  border-radius: 6%;
+  border: 1.5px solid rgba(255, 248, 240, 0.55);
+}
+
+/* 空牌位（待选择） */
+.poker-slot {
+  aspect-ratio: 5 / 7;
+  border-radius: 9%;
+  border: 1.5px dashed rgba(212, 175, 55, 0.45);
+  background: rgba(0, 0, 0, 0.18);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(232, 207, 109, 0.5);
+  font-size: calc(var(--pc-size, 44px) * 0.34);
+  font-weight: 600;
+  flex: none;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+.poker-slot:hover {
+  border-color: rgba(212, 175, 55, 0.9);
+  background: rgba(0, 0, 0, 0.28);
+}
+
+/* ---------- 通用组件 ---------- */
+.card-panel {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
+  border: 1px solid rgba(212, 175, 55, 0.22);
+  border-radius: 14px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+}
+
+/* 金色主按钮（≥44px 触控区） */
+.btn-gold {
+  min-height: 48px;
+  border-radius: 12px;
+  background: linear-gradient(180deg, #e8cf6d 0%, #d4af37 60%, #b3922c 100%);
+  color: #2b2005;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.45);
+  transition: filter 0.15s, transform 0.05s;
+}
+.btn-gold:hover {
+  filter: brightness(1.06);
+}
+.btn-gold:active {
+  transform: translateY(1px);
+}
+.btn-gold:disabled {
+  filter: grayscale(0.6) brightness(0.7);
+  cursor: not-allowed;
+}
+
+/* 分段选择器 */
+.seg {
+  min-height: 44px;
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(212, 175, 55, 0.25);
+  overflow: hidden;
+  display: flex;
+}
+.seg > button {
+  flex: 1;
+  min-height: 44px;
+  color: rgba(255, 255, 255, 0.65);
+  font-weight: 600;
+  transition: background 0.15s, color 0.15s;
+}
+.seg > button.on {
+  background: linear-gradient(180deg, rgba(212, 175, 55, 0.9), rgba(168, 134, 42, 0.9));
+  color: #241b04;
+}
+
+/* 13×13 范围网格 */
+.range-grid {
+  display: grid;
+  grid-template-columns: repeat(13, minmax(0, 1fr));
+  gap: 1.5px;
+}
+.range-cell {
+  aspect-ratio: 1;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.06);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 8px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.38);
+  line-height: 1;
+  padding: 0;
+}
+.range-cell.on {
+  background: rgba(212, 175, 55, 0.85);
+  color: #241b04;
+}
+.range-cell.pair.on {
+  background: rgba(46, 160, 84, 0.9);
+  color: #06230f;
+}
+
+/* 进度条 */
+.prog-track {
+  height: 10px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.35);
+  overflow: hidden;
+}
+.prog-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #d4af37, #e8cf6d);
+  transition: width 0.12s linear;
+}
